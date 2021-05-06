@@ -2,7 +2,7 @@ const Socket = require("websocket").server
 const http = require("http")
 
 const server = http.createServer((req, res) => {})
-var PORT = 3002
+var PORT = 3003
 //var PORT = process.env.PORT || 3001
 console.log(PORT);
 server.listen(PORT, () => {
