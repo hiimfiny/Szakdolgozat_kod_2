@@ -2,8 +2,8 @@ const Socket = require("websocket").server
 const http = require("http")
 
 const server = http.createServer((req, res) => {})
-var PORT = 3001
-//var PORT = process.env.PORT || 3001
+//var PORT = 3001
+var PORT = process.env.PORT || 3001
 server.listen(PORT, () => {
     console.log("Listening on port "  + PORT + "...")
 })
