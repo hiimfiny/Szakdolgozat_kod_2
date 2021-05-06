@@ -1,7 +1,7 @@
 //Változó a WebSocket használatához
 //var PORT = 3001
 var PORT = 3003
-const  webSocket = new WebSocket("ws://127.0.0.1:" + PORT)
+const  webSocket = new WebSocket("https://webrtc-szakdolgozat.herokuapp.com/")
 
 let ischrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
 let localStream
