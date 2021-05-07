@@ -4,7 +4,7 @@ const express = require("express")
 
 const app=express()
 var server = http.Server(app)
-app.use(express.static('public'))
+app.use(express.static('client'))
 
 //const server = http.createServer((req, res) => {})
 //var PORT = 3004
