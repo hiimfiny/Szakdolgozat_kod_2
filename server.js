@@ -4,11 +4,11 @@ const express = require("express")
 
 const app=express()
 var server = http.Server(app)
-app.use(express.static('client'))
+app.use(express.static(__dirname))
 
 //const server = http.createServer((req, res) => {})
 //var PORT = 3004
-var PORT = process.env.PORT || 3003
+var PORT = process.env.PORT || 3004
 server.listen(PORT, () => {
     console.log("Listening on port "  + PORT + "...")
 })
