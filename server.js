@@ -1,10 +1,14 @@
 const Socket = require("websocket").server
 const http = require("http")
+const express = require("express")
 
-const server = http.createServer((req, res) => {})
-//var PORT = 3003
-var PORT = process.env.PORT || 3001
-console.log(PORT);
+const app=express()
+var server = http.Server(app)
+app.use(express.static('public'))
+
+//const server = http.createServer((req, res) => {})
+//var PORT = 3004
+var PORT = process.env.PORT || 3003
 server.listen(PORT, () => {
     console.log("Listening on port "  + PORT + "...")
 })
