@@ -12,7 +12,10 @@ var PORT = process.env.PORT || 3003
 server.listen(PORT, () => {
     console.log("Listening on port "  + PORT + "...")
 })
-
+server.get('/', (req, res) => {
+    res.send('ok')
+    console.log("get")
+  })
 const webSocket = new Socket({ httpServer: server })
 
 let users = []
