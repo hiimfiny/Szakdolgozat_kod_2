@@ -13,7 +13,7 @@ server.listen(PORT, () => {
     console.log("Listening on port "  + PORT + "...")
 })
 app.get('/', (req, res) => {
-    res.sendFile('/index.html');
+    res.sendFile(__dirname + '/index.html');
   })
 const webSocket = new Socket({ httpServer: server })
 
