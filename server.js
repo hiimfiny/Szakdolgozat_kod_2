@@ -15,8 +15,8 @@ server.listen(PORT, () => {
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
   })
-const webSocket = new Socket({ httpServer: server })
 
+const webSocket = new Socket({ httpServer: server })
 let users = []
 
 webSocket.on('request', (req) => {
@@ -24,7 +24,6 @@ webSocket.on('request', (req) => {
 
     connection.on('message', (message) => {
         const data = JSON.parse(message.utf8Data)
-
         const user = findRoom(data.roomid)
 
         switch(data.type) {
@@ -33,18 +32,18 @@ webSocket.on('request', (req) => {
                 if (user != null) {
                     return
                 }
-
                 const newUser = {
                      conn: connection,
                      roomid: data.roomid
                 }
-
                 users.push(newUser)
                 console.log(newUser.roomid)
                 break
+
             case "store_offer":
-                if (user == null)
+                if (user == null){
                     return
+                }
                 user.offer = data.offer
                 break
             
@@ -57,16 +56,17 @@ webSocket.on('request', (req) => {
                 
                 user.candidates.push(data.candidate)
                 break
+
             case "send_answer":
                 if (user == null) {
                     return
                 }
-
                 sendData({
                     type: "answer",
                     answer: data.answer
                 }, user.conn)
                 break
+
             case "send_candidate":
                 if (user == null) {
                     return
@@ -77,23 +77,22 @@ webSocket.on('request', (req) => {
                     candidate: data.candidate
                 }, user.conn)
                 break
+
             case "join_call":
                 if (user == null) {
                     return
                 }
-
                 sendData({
                     type: "offer",
                     offer: user.offer
                 }, connection)
-                
+
                 user.candidates.forEach(candidate => {
                     sendData({
                         type: "candidate",
                         candidate: candidate
                     }, connection)
                 })
-
                 break
         }
     })

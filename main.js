@@ -3,7 +3,7 @@ var PORT = 3004
 //var PORT = process.env.PORT || 3003
 //const  webSocket = new WebSocket("ws://webrtc-szakdolgozat.herokuapp.com")
 const  webSocket = new WebSocket("ws://127.0.0.1:"+PORT)
-let ischrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
+
 let localStream
 let pc
 let roomid
@@ -21,6 +21,11 @@ let defaultConstraints = {
     audio: true,
     video: true
 }
+
+let ischrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
+let isVideo = true
+let isAudio = true
+
 navigator.getUserMedia = ( 
     navigator.getUserMedia || 
     navigator.mediaDevices.getUserMedia //||
@@ -31,8 +36,7 @@ navigator.getUserMedia = (
 roomid=roomidGen()
 
 function sendRoomId(){
-    //roomid = roomidGen()
-    
+
     sendData({
         type: "store_room"
     })
@@ -79,11 +83,6 @@ function sendData(data){
     webSocket.send(JSON.stringify(data))
 }
 
-function startvideo(){
-    document.getElementById("local-video").srcObject=navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true})
-}
 function startCallFunction(stream){
     localStream=stream
         document.getElementById("local-video").srcObject = localStream
@@ -166,15 +165,11 @@ function createAndSendOffer() {
     })
 }
 
-let isAudio = true
 function muteAudio(){
     isAudio= !isAudio
     localStream.getAudioTracks()[0].enabled = isAudio
-
-    
 }
 
-let isVideo = true
 function muteVideo(){
     isVideo= !isVideo
     localStream.getVideoTracks()[0].enabled = isVideo
@@ -188,7 +183,6 @@ function screenShare(){
         video: true
     })
     localStream.getVideoTracks[0]=shareStream
-
 
     screen=!screen
 }
