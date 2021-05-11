@@ -1,8 +1,8 @@
 //Változó a WebSocket használatához
-var PORT = 3004
+var PORT = 3000
 //var PORT = process.env.PORT || 3003
-//const  webSocket = new WebSocket("ws://webrtc-szakdolgozat.herokuapp.com")
-const  webSocket = new WebSocket("ws://127.0.0.1:"+PORT)
+const  webSocket = new WebSocket("ws://webrtc-szakdolgozat.herokuapp.com")
+//const  webSocket = new WebSocket("ws://127.0.0.1:")
 
 let localStream
 let pc
@@ -183,6 +183,7 @@ function screenShare(){
         video: true
     })
     localStream.getVideoTracks[0]=shareStream
+
 
     screen=!screen
 }
