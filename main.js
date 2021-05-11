@@ -107,6 +107,7 @@ function startCall(){
     sendData({
         type: "store_room"
     })
+    /*
     if(ischrome){
         navigator.getUserMedia(defaultConstraints, function(stream){
             startCallFunction(stream)},
@@ -114,6 +115,7 @@ function startCall(){
             console.log(error)
         })
     }
+    */
     navigator.mediaDevices.getUserMedia(defaultConstraints).then (stream =>{
         startCallFunction(stream)
 
