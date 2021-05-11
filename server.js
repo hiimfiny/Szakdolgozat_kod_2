@@ -1,14 +1,17 @@
+//A szerver működéséhez szükséges változók
 const Socket = require("websocket").server
 const http = require("http")
 const express = require("express")
-
 const app=express()
 var server = http.Server(app)
+const webSocket = new Socket({ httpServer: server })
+
 app.use(express.static(__dirname))
 
-//const server = http.createServer((req, res) => {})
-//var PORT = 3004
-var PORT = process.env.PORT || 3004
+let users = []
+var PORT = process.env.PORT || 3000
+
+//A szerver működésért felelős függvények
 server.listen(PORT, () => {
     console.log("Listening on port "  + PORT + "...")
 })
@@ -16,22 +19,21 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
   })
 
-const webSocket = new Socket({ httpServer: server })
-let users = []
-
+//Itt történik az üzenetek kezelése
 webSocket.on('request', (req) => {
     const connection = req.accept()
 
+    //Üzenet típusa alapján történő kezelés
     connection.on('message', (message) => {
         const data = JSON.parse(message.utf8Data)
         const user = findRoom(data.roomid)
 
         switch(data.type) {
             case "store_room":
-
                 if (user != null) {
                     return
                 }
+
                 const newUser = {
                      conn: connection,
                      roomid: data.roomid
@@ -44,6 +46,7 @@ webSocket.on('request', (req) => {
                 if (user == null){
                     return
                 }
+
                 user.offer = data.offer
                 break
             
@@ -51,6 +54,7 @@ webSocket.on('request', (req) => {
                 if (user == null) {
                     return
                 }
+
                 if (user.candidates == null)
                     user.candidates = []
                 
@@ -61,6 +65,7 @@ webSocket.on('request', (req) => {
                 if (user == null) {
                     return
                 }
+
                 sendData({
                     type: "answer",
                     answer: data.answer
@@ -82,6 +87,7 @@ webSocket.on('request', (req) => {
                 if (user == null) {
                     return
                 }
+
                 sendData({
                     type: "offer",
                     offer: user.offer
@@ -97,6 +103,7 @@ webSocket.on('request', (req) => {
         }
     })
 
+    //A kapcsolat megszakításakor el kell távolítani a felhasználót a listából
     connection.on('close', (reason, description) => {
         users.forEach(user => {
             if (user.conn == connection) {
@@ -107,10 +114,12 @@ webSocket.on('request', (req) => {
     })
 })
 
+//Az üzenetek küldését végző segédfüggvény
 function sendData(data, conn) {
     conn.send(JSON.stringify(data))
 }
 
+//A felhasználó azonosítását végző segédfüggvény
 function findRoom(roomid) {
     for (let i = 0;i < users.length;i++) {
         if (users[i].roomid == roomid)

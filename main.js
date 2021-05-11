@@ -1,9 +1,7 @@
 //Változó a WebSocket használatához
-var PORT = 3000
-//var PORT = process.env.PORT || 3003
 const  webSocket = new WebSocket("wss://webrtc-szakdolgozat.herokuapp.com")
-//const  webSocket = new WebSocket("ws://127.0.0.1:")
 
+//Változók felsorolása és inicializálása
 let localStream
 let pc
 let roomid
@@ -22,33 +20,23 @@ let defaultConstraints = {
     video: true
 }
 
-let ischrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)
 let isVideo = true
 let isAudio = true
 
+//A metódus alternatívái
 navigator.getUserMedia = ( 
     navigator.getUserMedia || 
-    navigator.mediaDevices.getUserMedia //||
-    //navigator.webkitGetUserMedia ||
-    //navigator.msGetUserMedia);
+    navigator.mediaDevices.getUserMedia
 );
 
 roomid=roomidGen()
-
 function sendRoomId(){
-
     sendData({
         type: "store_room"
     })
 }
 
-function roomidGen(){
-    let r = Math.random().toString(36).substring(6);
-    console.log("random", r);
-    document.getElementById("roomid-field").value=r
-    return r
-}
-
+//Az üzenetek kezelését végző függvény
 webSocket.onmessage  = (event) =>{
     handleSignalingData(JSON.parse(event.data))
 }
@@ -66,25 +54,16 @@ function handleSignalingData(data){
             pc.addIceCandidate(data.candidate)
     }
 }
-function createAndSendAnswer(){
-    pc.createAnswer((answer) =>{
-        pc.setLocalDescription(answer)
-        sendData({
-            type: "send_answer",
-            answer: answer
-        })
-    }, error =>{
-        console.log(error)
+
+
+//A hívás indítását végző függvény
+function startCall(){
+    sendData({
+        type: "store_room"
     })
-}
 
-function sendData(data){
-    data.roomid = roomid
-    webSocket.send(JSON.stringify(data))
-}
-
-function startCallFunction(stream){
-    localStream=stream
+    navigator.mediaDevices.getUserMedia(defaultConstraints).then (stream =>{
+        localStream=stream
         document.getElementById("local-video").srcObject = localStream
 
         pc  = new RTCPeerConnection(config)
@@ -100,30 +79,14 @@ function startCallFunction(stream){
                 candidate: e.candidate
             })
         })
+
         createAndSendOffer()
-}
-
-function startCall(){
-    sendData({
-        type: "store_room"
-    })
-    /*
-    if(ischrome){
-        navigator.getUserMedia(defaultConstraints, function(stream){
-            startCallFunction(stream)},
-        function(error){
-            console.log(error)
-        })
-    }
-    */
-    navigator.mediaDevices.getUserMedia(defaultConstraints).then (stream =>{
-        startCallFunction(stream)
-
     }, (error) =>  {
         console.log(error)
     })
 
 }
+//A híváshoz való csatlakozásért felelős függvény
 function joinCall(){
     roomid=document.getElementById("roomid-input").value
     document.getElementById("video-call-div").style.display="inline"
@@ -145,17 +108,44 @@ function joinCall(){
                 candidate: e.candidate
             })
         })
-        
+
         sendData({
             type: "join_call"
         })
-
     }, (error) =>  {
         console.log(error)
     })
-
 }
 
+
+//A szoba azonosítóját generálja le
+function roomidGen(){
+    let r = Math.random().toString(36).substring(6);
+    console.log("random", r);
+    document.getElementById("roomid-field").value=r
+    return r
+}
+
+//Az üzenetküldést végző segédfüggvény
+function sendData(data){
+    data.roomid = roomid
+    webSocket.send(JSON.stringify(data))
+}
+
+//Az üzenetek kezelésénél használt függvény
+function createAndSendAnswer(){
+    pc.createAnswer((answer) =>{
+        pc.setLocalDescription(answer)
+        sendData({
+            type: "send_answer",
+            answer: answer
+        })
+    }, error =>{
+        console.log(error)
+    })
+}
+
+//A hívás indításakor használt függvény
 function createAndSendOffer() {
     pc.createOffer((offer) => {
         sendData({
@@ -167,25 +157,12 @@ function createAndSendOffer() {
     })
 }
 
+//A hang és videó némításáért felelős függvény
 function muteAudio(){
     isAudio= !isAudio
     localStream.getAudioTracks()[0].enabled = isAudio
 }
-
 function muteVideo(){
     isVideo= !isVideo
     localStream.getVideoTracks()[0].enabled = isVideo
-}
-
-let screen = false
-function screenShare(){
-    
-    let shareStream = navigator.mediaDevices.getDisplayMedia({
-        audio: true,
-        video: true
-    })
-    localStream.getVideoTracks[0]=shareStream
-
-
-    screen=!screen
 }
