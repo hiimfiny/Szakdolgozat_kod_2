@@ -1,7 +1,7 @@
 //Változó a WebSocket használatához
 var PORT = 3000
 //var PORT = process.env.PORT || 3003
-const  webSocket = new WebSocket("ws://webrtc-szakdolgozat.herokuapp.com")
+const  webSocket = new WebSocket("wss://webrtc-szakdolgozat.herokuapp.com")
 //const  webSocket = new WebSocket("ws://127.0.0.1:")
 
 let localStream
